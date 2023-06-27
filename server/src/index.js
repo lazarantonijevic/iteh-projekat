@@ -2,36 +2,33 @@ const express = require("express");
 const cors = require("cors");
 const session = require('express-session');
 
+let port = process.env.PORT || 8080;
 
 const connect = require("./configs/db");
 
 require('dotenv').config();
 const app = express();
 app.use(express.json());
+app.use(cors());
 
-let port = process.env.PORT ||   8080;
-
-
-
-
-const paymentRoutes = require("./controllers/payment");
-
-
-const productApi = require("./controllers/ProductsController");
+const passport = require("./configs/google-oauth");
 
 app.use(session({
   secret: process.env.EXPRESS_SESSION_SECRET,
   resave: false,
   saveUninitialized: false
 }));
-
-const passport = require("./configs/google-oauth");
-
-
+app.use(passport.initialize());
+app.use(passport.session());
 
 
 
-app.use(cors());
+
+
+
+const productApi = require("./controllers/ProductsController");
+
+
 
 
 const { register, login, newToken } = require("./controllers/auth.controller");
@@ -47,13 +44,7 @@ app.use("/api/payment/", paymentRoutes);
 
 app.use("/product", productApi);
 
-passport.serializeUser(function (user, done) {
-  done(null, user);
-});
 
-passport.deserializeUser(function (user, done) {
-  done(null, user);
-});
 
 app.get(
   "/auth/google",
@@ -63,17 +54,15 @@ app.get(
 app.get(
   "/auth/google/callback",
   passport.authenticate("google", {
-    successRedirect: "",
     failureRedirect: "/auth/google/failure",
   }),
   (req, res) => {
     const { user } = req;
-    console.log("user", user);
     const token = newToken(user);
-    console.log("user", user);
-    return res.send({ user, token });
+    res.redirect(`http://localhost:3000/?user=${JSON.stringify(user)}&token=${token}`);
   }
 );
+
 
 app.listen(port, async (req, res) => {
   try {

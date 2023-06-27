@@ -1,5 +1,10 @@
 import React from 'react'
 import "./LandingPage.css"
+import { useEffect } from "react";
+import { useDispatch } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+import { googleLogin } from '../../Redux/LoginUserData/Action';
+
 
 import SimpleImageSlider from "react-simple-image-slider";
 
@@ -12,6 +17,24 @@ export default function LandingPage() {
     { url: "https://sslimages.shoppersstop.com/sys-master/root/hff/hcd/27599340339230/Denim-Fest-Main-Banner-Web.jpg" },
   ];
  
+
+  const dispatch = useDispatch();
+  const location = useLocation();
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const user = JSON.parse(urlParams.get('user'));
+    const token = urlParams.get('token');
+
+    if (user && token) {
+      dispatch(googleLogin(user, token));
+      urlParams.delete('user');
+      urlParams.delete('token');
+      const newUrl = `${window.location.pathname}${urlParams.toString()}`;
+      window.history.replaceState(null, '', newUrl);
+    }
+  }, [dispatch, location.search]);
+
   return (
     <div className='LandingPage'>
       <div>
