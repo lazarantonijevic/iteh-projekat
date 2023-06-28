@@ -3,82 +3,63 @@ import "./PaymentPage.css"
 import { useDispatch, useSelector } from 'react-redux';
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
-import { store } from '../../Redux/Store';
+import { toast } from "react-toastify";
 import { emptyCart } from '../../Redux/Cart/Action';
 
 export default function PaymentPage() {
   const navigate = useNavigate()
-  const [Mobilenumber, setMobileNumber] = useState("")
 
   const data = useSelector((store) => store.cart.cart)
 
   const shippingAddress = useSelector((store) => store.shippingAddress.ShippingAddress)
 
-  console.log("adddd" , data.length)
 
-  var totalMRP = 0;
-  var discountMRP = 0;
+  var totalPrice = 0;
+  var fullPrice = 0;
   var numberOfItems = data.length
 
   for (var i = 0; i < data.length; i++) {
-    totalMRP += (data[i].price.sp *  data[i].qty)
-    discountMRP += (data[i].price.mrp *  data[i].qty)
+    totalPrice += (data[i].price.sp *  data[i].qty)
+    fullPrice += (data[i].price.mrp *  data[i].qty)
   }
 
   const dispatch = useDispatch()
+ 
 
-  // razor par start
-  const initPayment = (data) => {
-    const options = {
-      key: "rzp_test_xkRX7E1arP0hgl",
-      amount: (totalMRP) * 100,
-      currency: "INR",
-      description: "payment",
-
-      handler: async (response) => {
-        try {
-          const verifyUrl = "http://localhost:8080/api/payment/verify";
-          const { data } = await axios.post(verifyUrl, response).then((res) => console.log("after Payment")).catch((error) => {console.log("error after paymwnt"); navigate("/") ; dispatch(emptyCart())});
-          console.log(data);
-          console.log("after initiiii")
-        } catch (error) {
-          console.log(error);
-        }
-      },
-      theme: {
-        color: "#3399cc",
-      },
-    };
-    const rzp1 = new window.Razorpay(options);
-    rzp1.open();
-  };
-
-  const handlePayment = async () => {
+  const handleOrder = async () => {
     try {
-      const orderUrl = "http://localhost:8080/api/payment/orders";
-      const { data } = await axios.post(orderUrl, { amount: 400 });
-      console.log(data);
-      initPayment(data.data);
+      const orderUrl = "http://localhost:8080/api/order";
 
-      console.log("afterrrrrr")
+      const orderItems = data.map(item => ({
+        itemId: item.id,
+        itemPrice: item.price.sp,
+        amount: item.qty
+      }));
+
+      const order = {
+        items: orderItems,
+        shippingAddress: shippingAddress
+      };
+
+      await axios.post(orderUrl, order)
+
+      console.log("Order submitted successfully!");
+      navigate("/");
+      dispatch(emptyCart());
+      toast.success("Order submitted successfully!");
+
     } catch (error) {
-      console.log(error);
+      console.error("Error submitting order:", error);
+      toast.error("Error submitting order. Please try again.");
     }
   };
 
 
-  // razor pay end
 
-  const handleAddNumber = (e) => {
-    const re = /^[0-9\b]+$/;
-    if (e.target.value === '' || re.test(e.target.value)) {
-      setMobileNumber(e.target.value)
-    }
-  }
 
   return (
     <div className='PaymentPageMain'>
-      {/* <h1>Payment</h1> */}
+      
 
       <div className='PaymentPageFlex'>
 
@@ -110,11 +91,10 @@ export default function PaymentPage() {
 
             <div className='payOptionDetails'>
               <div>
-                <div className='totolAmt paymentHeading'><p>Razor Pay</p></div>
+                <div className='totolAmt paymentHeading'><p>Send order</p></div>
 
-                <div><input type="text" placeholder='Mobile Number' maxlength="10" value={Mobilenumber} onChange={(e) => handleAddNumber(e)} /></div>
-
-                <div><button onClick={handlePayment}>Pay Now</button></div>
+             
+                <div><button onClick={handleOrder}>Send Now</button></div>
 
               </div>
             </div>
@@ -137,12 +117,12 @@ export default function PaymentPage() {
 
   <div className='ProductFlex'>
     <div><p>Total MRP</p></div>
-    <div><p>${totalMRP}</p></div>
+    <div><p>${fullPrice}</p></div>
   </div>
 
   <div className='ProductFlex'>
     <div><p>Discount on MRP</p></div>
-    <div className='greenText'><p>-${discountMRP - totalMRP}</p></div>
+    <div className='greenText'><p>-${fullPrice - totalPrice}</p></div>
   </div>
 
   <div className='ProductFlex marginBtm'>
@@ -152,7 +132,7 @@ export default function PaymentPage() {
 
   <div className='ProductFlex totolAmt'>
     <div><p>Total Amount</p></div>
-    <div><p>${totalMRP}</p></div>
+    <div><p>${totalPrice}</p></div>
   </div>
 
 

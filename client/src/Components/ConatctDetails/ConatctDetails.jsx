@@ -60,15 +60,12 @@ export default function ConatctDetails() {
       const handleAddBag = (e) => {
         console.log("data",e)
         dispatch(addCart(e))
-        // alert("Product Added To Cart Successfully")
         toast.success("Product Added To Cart Successfully")
     }
     
     const handleRemoveQuantity = (e) => {
       console.log("remove",e)
       dispatch(removeOneCart(e))
-      // alert("Product Added To Cart Successfully")
-      // toast.success("Product Added To Cart Successfully")
     }
 
 
@@ -188,23 +185,13 @@ export default function ConatctDetails() {
 
                 </Box>
 
-                <div className="SaveAddress">
-                    <p>SAVE ADDRESS AS</p>
-                    <div>
-                        <div>
-                            <p>Home</p>
-                        </div>
-                        <div>
-                            <p>Work</p>
-                        </div>
-                    </div>
-                </div>
+                
 
 {
     name && mobile && pincode && address && locality && city && state ? 
     <div className="AddAddress">
                     <div onClick={() => handleContinue()}>
-                        <p>ADD ADDRESS / PROCEED TO CHECKOUT</p>
+                        <p>PROCEED TO CHECKOUT</p>
                     </div>
                 </div> : 
     <div className="AddAddress" >

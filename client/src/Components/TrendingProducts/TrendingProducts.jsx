@@ -28,8 +28,6 @@ export default function TrendingProducts() {
     }
 
 
-    // console.log("setttttt", randomId1, randomId2, randomId3)
-    // console.log("rere", data[randomId1].name)
     return (
         <div className='TrendingProducts'>
             <div className='TrendingProductsHeading'>
@@ -69,7 +67,6 @@ export default function TrendingProducts() {
                 <div>
                     {
                         data[randomId2] ? <div className='IndividualProd'
-                            //   onClick={() => { navigate(`/${id}/${e.id}`) }}
                             onClick={() => { navigate(`/${data[randomId2].tag}/${data[randomId2]._id}`); goToTop() }}
                         >
                             <div className='IndividualProdImg'>

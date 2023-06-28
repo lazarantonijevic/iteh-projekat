@@ -14,7 +14,7 @@ passport.use(
       scope: ['email', 'profile'],
     },
     async function (request, accessToken, refreshToken, profile, done) {
-      //console.log("profile" , profile)
+      
       let user = await User.findOne({ email: profile?.email }).lean().exec();
 
 

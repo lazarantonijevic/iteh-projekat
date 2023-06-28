@@ -35,7 +35,6 @@ export default function ProductDescriptionPage() {
     const handleAddBag = () => {
         console.log(data)
         dispatch(addCart(data))
-        // alert("Product Added To Cart Successfully")
         toast.success("Product Added To Cart Successfully")
     }
 
@@ -48,13 +47,7 @@ export default function ProductDescriptionPage() {
     return (
         <div>
 
-            {/* <div className='CategoryHeading'>
-                <p>Product Details</p>
-                <p>
-                    <span onClick={() => navigate("/")}>Home |</span>
-                    <span> Category</span>
-                </p>
-            </div> */}
+            
 
             
 

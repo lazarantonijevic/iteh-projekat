@@ -26,6 +26,9 @@ app.use(passport.session());
 
 
 
+const orderRoute = require("./controllers/order.controller");
+
+
 const productApi = require("./controllers/ProductsController");
 
 
@@ -40,7 +43,7 @@ app.post("/login", login);
 
 
 
-app.use("/api/payment/", paymentRoutes);
+app.use("/api/order", orderRoute);
 
 app.use("/product", productApi);
 
